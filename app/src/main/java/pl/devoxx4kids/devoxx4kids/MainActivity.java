@@ -41,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final Region defaultUUIDRegion = new Region("Beacons with default Estimote UUID",
-                UUID.fromString("2f6578fe897b657231f40ae9e5b19d26"), null, null);
+                UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), null, null);
 
         // Should be invoked in #onStart.
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
