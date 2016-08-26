@@ -36,7 +36,13 @@ public class MainActivity extends AppCompatActivity {
         beaconManager.setRangingListener(new BeaconManager.RangingListener() {
             @Override
             public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
-                Log.d(TAG, "Discovered beacons : " + beacons.size());
+                Log.d(TAG, " - Measured Power Size" + beacons.size());
+                for (Beacon beacon:
+                        beacons) {
+                    Log.d(TAG, " - Measured Power" + beacon.getRssi());
+                }
+
+
             }
         });
 
@@ -46,11 +52,13 @@ public class MainActivity extends AppCompatActivity {
         // Should be invoked in #onStart.
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override public void onServiceReady() {
-                //scanId = beaconManager.startNearableDiscovery();
+                scanId = beaconManager.startNearableDiscovery();
 
                 beaconManager.startRanging(defaultUUIDRegion);
             }
         });
+
+
 
     }
 }
