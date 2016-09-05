@@ -10,16 +10,18 @@ import com.estimote.sdk.cloud.model.Color;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import pl.devoxx4kids.devoxx4kids.estimote.BeaconID;
 import pl.devoxx4kids.devoxx4kids.estimote.EstimoteCloudBeaconDetails;
 import pl.devoxx4kids.devoxx4kids.estimote.EstimoteCloudBeaconDetailsFactory;
 import pl.devoxx4kids.devoxx4kids.estimote.ProximityContentManager;
-
-//
-// Running into any issues? Drop us an email to: contact@estimote.com
-//
+import pl.devoxx4kids.devoxx4kids.model.BeaconContent;
+import pl.devoxx4kids.devoxx4kids.model.Service;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -81,6 +83,26 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Starting ProximityContentManager content updates");
             proximityContentManager.startContentUpdates();
         }
+
+        MyApplication application = MyApplication.get(getApplicationContext());
+        Service service = application.getService();
+
+        Call<List<BeaconContent>> call = service.getBeaconContents();
+        call.enqueue(new Callback<List<BeaconContent>>() {
+            @Override
+            public void onResponse(Call<List<BeaconContent>> call, Response<List<BeaconContent>> response) {
+                Log.d(TAG,"Resposne : size - " + response.body().size());
+                for (BeaconContent beaconContent : response.body()) {
+                    Log.d(TAG,"* id - " + beaconContent.id + " url " + beaconContent.url);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<BeaconContent>> call, Throwable t) {
+                Log.d(TAG,"Resposne : error - " + t.getMessage());
+            }
+        });
+
     }
 
     @Override
