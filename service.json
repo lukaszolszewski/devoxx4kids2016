@@ -1,26 +1,26 @@
 [
   {
-    "id": 0,
-    "url": "http://placehold.it/500x500"
+    "id": "ice",
+    "url": "https://placeholdit.imgix.net/~text?txtsize=47&txt=ice&w=500&h=500"
   },
   {
-    "id": 1,
-    "url": "http://placehold.it/500x500"
+    "id": "beetroot",
+    "url": "https://placeholdit.imgix.net/~text?txtsize=47&txt=beetroot&w=500&h=500"
   },
   {
-    "id": 2,
-    "url": "http://placehold.it/500x500"
+    "id": "mint",
+    "url": "https://placeholdit.imgix.net/~text?txtsize=47&txt=mint&w=500&h=500"
   },
   {
-    "id": 3,
-    "url": "http://placehold.it/500x500"
+    "id": "blueberry",
+    "url": "https://placeholdit.imgix.net/~text?txtsize=47&txt=blueberry&w=500&h=500"
   },
   {
-    "id": 4,
-    "url": "http://placehold.it/500x500"
+    "id": "candy",
+    "url": "https://placeholdit.imgix.net/~text?txtsize=47&txt=candy&w=500&h=500"
   },
   {
-    "id": 5,
-    "url": "http://placehold.it/500x500"
+    "id": "lemon",
+    "url": "https://placeholdit.imgix.net/~text?txtsize=47&txt=lemon&w=500&h=500"
   }
 ]

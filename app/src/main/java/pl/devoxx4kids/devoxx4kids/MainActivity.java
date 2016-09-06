@@ -3,8 +3,10 @@ package pl.devoxx4kids.devoxx4kids;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.estimote.sdk.SystemRequirementsChecker;
 import com.estimote.sdk.cloud.model.Color;
 
@@ -49,6 +51,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int BACKGROUND_COLOR_NEUTRAL = android.graphics.Color.rgb(160, 169, 172);
 
+    private static Map<String, String> serviceContent = new HashMap<>();
+
+
     private ProximityContentManager proximityContentManager;
 
     @Override
@@ -67,10 +72,19 @@ public class MainActivity extends AppCompatActivity {
                     EstimoteCloudBeaconDetails beaconDetails = (EstimoteCloudBeaconDetails) content;
                     text = "You're in " + beaconDetails.getBeaconName() + "'s range!";
                     backgroundColor = BACKGROUND_COLORS.get(beaconDetails.getBeaconColor());
+
+                    String url = serviceContent.get(beaconDetails.getBeaconName());
+
+                    if (url != null) {
+                        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                        Glide.with(getApplicationContext()).load(url).into(imageView);
+                    }
+
                 } else {
                     text = "No beacons in range.";
                     backgroundColor = null;
                 }
+
                 ((TextView) findViewById(R.id.textView)).setText(text);
                 findViewById(R.id.relativeLayout).setBackgroundColor(
                         backgroundColor != null ? backgroundColor : BACKGROUND_COLOR_NEUTRAL);
@@ -98,9 +112,8 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<BeaconContent>>() {
             @Override
             public void onResponse(Call<List<BeaconContent>> call, Response<List<BeaconContent>> response) {
-                Log.d(TAG,"Resposne : size - " + response.body().size());
                 for (BeaconContent beaconContent : response.body()) {
-                    Log.d(TAG,"* id - " + beaconContent.id + " url " + beaconContent.url);
+                    serviceContent.put(beaconContent.id,beaconContent.url);
                 }
             }
 
