@@ -27,12 +27,24 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
+    private static final String UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
+    private static final List<BeaconID> BEACONS = Arrays.asList(
+            new BeaconID(UUID, 43984, 27941), //Lemon Tart
+            new BeaconID(UUID, 48486, 56847), //Icy Marshmallow
+            new BeaconID(UUID, 46134, 11150), //Sweet Beetroot
+            new BeaconID(UUID, 61323, 35137), //Mint Cocktail
+            new BeaconID(UUID, 11019, 56882), //Blueberry Pie
+            new BeaconID(UUID, 6911, 52460)   //Candy Floss
+    );
     private static final Map<Color, Integer> BACKGROUND_COLORS = new HashMap<>();
 
     static {
         BACKGROUND_COLORS.put(Color.ICY_MARSHMALLOW, android.graphics.Color.rgb(109, 170, 199));
         BACKGROUND_COLORS.put(Color.BLUEBERRY_PIE, android.graphics.Color.rgb(98, 84, 158));
         BACKGROUND_COLORS.put(Color.MINT_COCKTAIL, android.graphics.Color.rgb(155, 186, 160));
+        BACKGROUND_COLORS.put(Color.LEMON_TART, android.graphics.Color.rgb(255, 244, 79));
+        BACKGROUND_COLORS.put(Color.SWEET_BEETROOT, android.graphics.Color.rgb(215, 215, 215));
+        BACKGROUND_COLORS.put(Color.CANDY_FLOSS, android.graphics.Color.rgb(255, 186, 210));
     }
 
     private static final int BACKGROUND_COLOR_NEUTRAL = android.graphics.Color.rgb(160, 169, 172);
@@ -44,12 +56,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        proximityContentManager = new ProximityContentManager(this,
-                Arrays.asList(
-                        // TODO: replace with UUIDs, majors and minors of your own beacons
-                        new BeaconID("B9407F30-F5F8-466E-AFF9-25556B57FE6D", 1, 1),
-                        new BeaconID("B9407F30-F5F8-466E-AFF9-25556B57FE6D", 2, 2),
-                        new BeaconID("B9407F30-F5F8-466E-AFF9-25556B57FE6D", 3, 3)),
+        proximityContentManager = new ProximityContentManager(this, BEACONS,
                 new EstimoteCloudBeaconDetailsFactory());
         proximityContentManager.setListener(new ProximityContentManager.Listener() {
             @Override
