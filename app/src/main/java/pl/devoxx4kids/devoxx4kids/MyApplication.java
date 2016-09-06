@@ -15,7 +15,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        EstimoteSDK.initialize(getApplicationContext(), "<#App ID#>", "<#App Token#>");
+        EstimoteSDK.initialize(getApplicationContext(), "entrop-tomek-gmail-com-s-y-ld4", "5935e8ceb0c4a4cb7d90bd45c22ee92f");
         //EstimoteSDK.enableDebugLogging(true);
     }
 
