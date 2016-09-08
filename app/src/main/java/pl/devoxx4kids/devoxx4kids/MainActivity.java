@@ -1,10 +1,14 @@
 package pl.devoxx4kids.devoxx4kids;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.estimote.sdk.SystemRequirementsChecker;
@@ -45,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
         BACKGROUND_COLORS.put(Color.BLUEBERRY_PIE, android.graphics.Color.rgb(98, 84, 158));
         BACKGROUND_COLORS.put(Color.MINT_COCKTAIL, android.graphics.Color.rgb(155, 186, 160));
         BACKGROUND_COLORS.put(Color.LEMON_TART, android.graphics.Color.rgb(255, 244, 79));
-        BACKGROUND_COLORS.put(Color.SWEET_BEETROOT, android.graphics.Color.rgb(215, 215, 215));
+        BACKGROUND_COLORS.put(Color.SWEET_BEETROOT, android.graphics.Color.rgb(143, 43, 89));
         BACKGROUND_COLORS.put(Color.CANDY_FLOSS, android.graphics.Color.rgb(255, 186, 210));
     }
 
@@ -53,8 +57,9 @@ public class MainActivity extends AppCompatActivity {
 
     private static Map<String, String> serviceContent = new HashMap<>();
 
-
     private ProximityContentManager proximityContentManager;
+
+    private Button update;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +71,10 @@ public class MainActivity extends AppCompatActivity {
         proximityContentManager.setListener(new ProximityContentManager.Listener() {
             @Override
             public void onContentChanged(Object content) {
-                String text;
                 Integer backgroundColor;
+
                 if (content != null) {
                     EstimoteCloudBeaconDetails beaconDetails = (EstimoteCloudBeaconDetails) content;
-                    text = "You're in " + beaconDetails.getBeaconName() + "'s range!";
                     backgroundColor = BACKGROUND_COLORS.get(beaconDetails.getBeaconColor());
 
                     String url = serviceContent.get(beaconDetails.getBeaconName());
@@ -79,17 +83,18 @@ public class MainActivity extends AppCompatActivity {
                         ImageView imageView = (ImageView) findViewById(R.id.imageView);
                         Glide.with(getApplicationContext()).load(url).into(imageView);
                     }
-
                 } else {
-                    text = "No beacons in range.";
                     backgroundColor = null;
+                    ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                    imageView.setImageDrawable(ContextCompat.getDrawable(getParent(), R.drawable.beacon));
                 }
 
-                ((TextView) findViewById(R.id.textView)).setText(text);
                 findViewById(R.id.relativeLayout).setBackgroundColor(
                         backgroundColor != null ? backgroundColor : BACKGROUND_COLOR_NEUTRAL);
             }
         });
+
+        update = ((Button) findViewById(R.id.update));
     }
 
     @Override
@@ -105,24 +110,49 @@ public class MainActivity extends AppCompatActivity {
             proximityContentManager.startContentUpdates();
         }
 
+        sync();
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sync();
+            }
+        });
+    }
+
+    private void sync() {
+
+        if (update!=null) {
+            update.setEnabled(false);
+        }
+
         MyApplication application = MyApplication.get(getApplicationContext());
         Service service = application.getService();
-
         Call<List<BeaconContent>> call = service.getBeaconContents();
         call.enqueue(new Callback<List<BeaconContent>>() {
             @Override
             public void onResponse(Call<List<BeaconContent>> call, Response<List<BeaconContent>> response) {
+                Log.d(TAG, "Response " + response.body());
                 for (BeaconContent beaconContent : response.body()) {
                     serviceContent.put(beaconContent.id,beaconContent.url);
+                }
+                if (update!=null) {
+                    update.setEnabled(true);
                 }
             }
 
             @Override
             public void onFailure(Call<List<BeaconContent>> call, Throwable t) {
-                Log.d(TAG,"Resposne : error - " + t.getMessage());
+
+                Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
+                toast.show();
+
+                t.printStackTrace();
+
+                if (update!=null) {
+                    update.setEnabled(true);
+                }
             }
         });
-
     }
 
     @Override
