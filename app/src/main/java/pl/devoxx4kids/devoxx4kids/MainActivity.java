@@ -86,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     backgroundColor = null;
                     ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                    imageView.setImageDrawable(ContextCompat.getDrawable(getParent(), R.drawable.beacon));
+                    imageView.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),
+                            R.drawable.beacon));
                 }
 
                 findViewById(R.id.relativeLayout).setBackgroundColor(
