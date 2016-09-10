@@ -132,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<BeaconContent>>() {
             @Override
             public void onResponse(Call<List<BeaconContent>> call, Response<List<BeaconContent>> response) {
-                Log.d(TAG, "Response " + response.body());
                 for (BeaconContent beaconContent : response.body()) {
                     serviceContent.put(beaconContent.id,beaconContent.url);
                 }
@@ -159,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG, "Stopping ProximityContentManager content updates");
         proximityContentManager.stopContentUpdates();
     }
 
