@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.realm.Realm;
 import pl.devoxx4kids.devoxx4kids.MyApplication;
 import pl.devoxx4kids.devoxx4kids.R;
 import pl.devoxx4kids.devoxx4kids.estimote.BeaconID;
@@ -27,6 +28,7 @@ import pl.devoxx4kids.devoxx4kids.estimote.EstimoteCloudBeaconDetails;
 import pl.devoxx4kids.devoxx4kids.estimote.EstimoteCloudBeaconDetailsFactory;
 import pl.devoxx4kids.devoxx4kids.estimote.ProximityContentManager;
 import pl.devoxx4kids.devoxx4kids.model.BeaconContent;
+import pl.devoxx4kids.devoxx4kids.model.Hero;
 import pl.devoxx4kids.devoxx4kids.model.Service;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,6 +64,8 @@ public class ScannerFragment extends Fragment {
 
     private ProximityContentManager proximityContentManager;
 
+    private Realm realm;
+
     private Button update;
 
     @Override
@@ -76,17 +80,40 @@ public class ScannerFragment extends Fragment {
         proximityContentManager.setListener(new ProximityContentManager.Listener() {
             @Override
             public void onContentChanged(Object content) {
-                Integer backgroundColor;
+                final Integer backgroundColor;
 
                 if (content != null) {
                     EstimoteCloudBeaconDetails beaconDetails = (EstimoteCloudBeaconDetails) content;
                     backgroundColor = BACKGROUND_COLORS.get(beaconDetails.getBeaconColor());
-
-                    String url = serviceContent.get(beaconDetails.getBeaconName());
+                    final String url = serviceContent.get(beaconDetails.getBeaconName());
 
                     if (url != null) {
                         ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
                         Glide.with(getContext()).load(url).into(imageView);
+
+                        update.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                try {
+                                    realm.beginTransaction();
+                                    Hero hero = new Hero();
+                                    hero.setUrl(url);
+                                    hero.setColor(backgroundColor);
+                                    realm.copyToRealm(hero);
+                                    realm.commitTransaction();
+
+                                    Toast toast = Toast.makeText(getContext(), getString(R.string.done), Toast.LENGTH_SHORT);
+                                    toast.show();
+
+                                } catch (Exception e) {
+                                    realm.cancelTransaction();
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        });
+
+
                     }
                 } else {
                     backgroundColor = null;
@@ -100,7 +127,8 @@ public class ScannerFragment extends Fragment {
             }
         });
 
-        update = ((Button) rootView.findViewById(R.id.update));
+        realm = Realm.getDefaultInstance();
+        update = ((Button) rootView.findViewById(R.id.get));
 
         return rootView;
     }
@@ -116,12 +144,7 @@ public class ScannerFragment extends Fragment {
             Log.d(TAG, "Starting ProximityContentManager content updates");
             proximityContentManager.startContentUpdates();
         }
-        update.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sync();
-            }
-        });
+
         sync();
     }
 
