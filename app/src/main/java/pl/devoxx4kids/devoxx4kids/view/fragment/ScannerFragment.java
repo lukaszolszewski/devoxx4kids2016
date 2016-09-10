@@ -73,7 +73,7 @@ public class ScannerFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         final View rootView = inflater.inflate(
-                R.layout.fragemnt_scanner, container, false);
+                R.layout.fragment_scanner, container, false);
 
         proximityContentManager = new ProximityContentManager(getContext(), BEACONS,
                 new EstimoteCloudBeaconDetailsFactory());
