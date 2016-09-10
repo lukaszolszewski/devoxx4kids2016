@@ -1,13 +1,14 @@
-package pl.devoxx4kids.devoxx4kids;
+package pl.devoxx4kids.devoxx4kids.view.fragment;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -19,6 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import pl.devoxx4kids.devoxx4kids.MyApplication;
+import pl.devoxx4kids.devoxx4kids.R;
 import pl.devoxx4kids.devoxx4kids.estimote.BeaconID;
 import pl.devoxx4kids.devoxx4kids.estimote.EstimoteCloudBeaconDetails;
 import pl.devoxx4kids.devoxx4kids.estimote.EstimoteCloudBeaconDetailsFactory;
@@ -29,9 +32,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class ScannerFragment extends Fragment {
 
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "ScannerFragment";
 
     private static final String UUID = "B9407F30-F5F8-466E-AFF9-25556B57FE6D";
     private static final List<BeaconID> BEACONS = Arrays.asList(
@@ -62,11 +65,13 @@ public class MainActivity extends AppCompatActivity {
     private Button update;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater,
+                             ViewGroup container, Bundle savedInstanceState) {
 
-        proximityContentManager = new ProximityContentManager(this, BEACONS,
+        final View rootView = inflater.inflate(
+                R.layout.fragemnt_scanner, container, false);
+
+        proximityContentManager = new ProximityContentManager(getContext(), BEACONS,
                 new EstimoteCloudBeaconDetailsFactory());
         proximityContentManager.setListener(new ProximityContentManager.Listener() {
             @Override
@@ -80,29 +85,30 @@ public class MainActivity extends AppCompatActivity {
                     String url = serviceContent.get(beaconDetails.getBeaconName());
 
                     if (url != null) {
-                        ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                        Glide.with(getApplicationContext()).load(url).into(imageView);
+                        ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
+                        Glide.with(getContext()).load(url).into(imageView);
                     }
                 } else {
                     backgroundColor = null;
-                    ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                    imageView.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(),
+                    ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
+                    imageView.setImageDrawable(ContextCompat.getDrawable(getContext(),
                             R.drawable.devoxx));
                 }
 
-                findViewById(R.id.relativeLayout).setBackgroundColor(
+                rootView.findViewById(R.id.relativeLayout).setBackgroundColor(
                         backgroundColor != null ? backgroundColor : BACKGROUND_COLOR_NEUTRAL);
             }
         });
 
-        update = ((Button) findViewById(R.id.update));
+        update = ((Button) rootView.findViewById(R.id.update));
+
+        return rootView;
     }
 
     @Override
-    protected void onResume() {
+    public void onResume() {
         super.onResume();
-
-        if (!SystemRequirementsChecker.checkWithDefaultDialogs(this)) {
+        if (!SystemRequirementsChecker.checkWithDefaultDialogs(getActivity())) {
             Log.e(TAG, "Can't scan for beacons, some pre-conditions were not met");
             Log.e(TAG, "Read more about what's required at: http://estimote.github.io/Android-SDK/JavaDocs/com/estimote/sdk/SystemRequirementsChecker.html");
             Log.e(TAG, "If this is fixable, you should see a popup on the app's screen right now, asking to enable what's necessary");
@@ -110,14 +116,13 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "Starting ProximityContentManager content updates");
             proximityContentManager.startContentUpdates();
         }
-
-        sync();
         update.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sync();
             }
         });
+        sync();
     }
 
     private void sync() {
@@ -126,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
             update.setEnabled(false);
         }
 
-        MyApplication application = MyApplication.get(getApplicationContext());
+        MyApplication application = MyApplication.get(getContext());
         Service service = application.getService();
         Call<List<BeaconContent>> call = service.getBeaconContents();
         call.enqueue(new Callback<List<BeaconContent>>() {
@@ -143,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<BeaconContent>> call, Throwable t) {
 
-                Toast toast = Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getContext(), t.getMessage(), Toast.LENGTH_LONG);
                 toast.show();
 
                 t.printStackTrace();
@@ -156,13 +161,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         proximityContentManager.stopContentUpdates();
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         super.onDestroy();
         proximityContentManager.destroy();
     }
