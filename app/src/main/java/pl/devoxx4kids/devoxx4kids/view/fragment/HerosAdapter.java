@@ -19,7 +19,7 @@ public class HerosAdapter extends RecyclerView.Adapter<HerosAdapter.ViewHolder> 
     private Realm realm;
     private Context contex;
 
-    public HerosAdapter(Context contex) {
+    public HerosAdapter(Realm realm, Context contex) {
         this.realm = Realm.getDefaultInstance();
         this.contex = contex;
     }

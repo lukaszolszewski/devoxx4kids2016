@@ -94,6 +94,7 @@ public class ScannerFragment extends Fragment {
                         update.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
+                                sync();
                                 try {
                                     realm.beginTransaction();
                                     Hero hero = new Hero();
@@ -120,6 +121,11 @@ public class ScannerFragment extends Fragment {
                     ImageView imageView = (ImageView) rootView.findViewById(R.id.imageView);
                     imageView.setImageDrawable(ContextCompat.getDrawable(getContext(),
                             R.drawable.devoxx));
+                    update.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            sync();
+                        }});
                 }
 
                 rootView.findViewById(R.id.relativeLayout).setBackgroundColor(
@@ -129,7 +135,11 @@ public class ScannerFragment extends Fragment {
 
         realm = Realm.getDefaultInstance();
         update = ((Button) rootView.findViewById(R.id.get));
-
+        update.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sync();
+            }});
         return rootView;
     }
 
